@@ -14,21 +14,12 @@ def pytest_configure(config):
 
 @pytest.fixture(scope="function")
 def appium_driver(request):
-    if not AppiumDriverFactory.is_server_ready():
-        pytest.skip("Appium server not running or unreachable")
-
-    driver_instance = None
+    driver_instance = AppiumDriverFactory.get_driver()
+    yield driver_instance
     try:
-        driver_instance = AppiumDriverFactory.get_driver()
-        yield driver_instance
-    except Exception as e:
-        pytest.skip(f"Android device or Appium session unavailable: {e}")
-    finally:
-        if driver_instance:
-            try:
-                driver_instance.quit()
-            except Exception:
-                pass
+        driver_instance.quit()
+    except Exception:
+        pass
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
