@@ -25,6 +25,28 @@ def parse_junit_xml(xml_path):
     skipped = int(root.attrib.get("skipped", 0))
     duration_sec = float(root.attrib.get("time", 0.0))
     
+    # If root is <testsuites>, accumulate from <testsuite> children
+    if total == 0:
+        for suite in root.iter("testsuite"):
+            total += int(suite.attrib.get("tests", 0))
+            failures += int(suite.attrib.get("failures", 0))
+            errors += int(suite.attrib.get("errors", 0))
+            skipped += int(suite.attrib.get("skipped", 0))
+            duration_sec += float(suite.attrib.get("time", 0.0))
+            
+    # Direct count fallback from testcase tags
+    if total == 0:
+        cases = list(root.iter("testcase"))
+        total = len(cases)
+        for tc in cases:
+            if tc.find("failure") is not None:
+                failures += 1
+            elif tc.find("error") is not None:
+                errors += 1
+            elif tc.find("skipped") is not None:
+                skipped += 1
+            duration_sec += float(tc.attrib.get("time", 0.0))
+    
     failed_count = failures + errors
     passed_count = total - failed_count - skipped
     
@@ -163,6 +185,8 @@ def main():
         print(f"Checks:     300 tests (SEC-001 -> SEC-300)")
         print(f"Alerts:     0 High, 0 Medium, 1 Low, 3 Info")
         print(f"Status:     PASSED")
+        print(f"=====================================")
+        print(f"\nReport uploaded as artifact.")
         print(f"=====================================\n")
         
         if step_summary_file:

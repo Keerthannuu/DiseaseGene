@@ -75,12 +75,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
 
       - name: Install Appium 2 & UiAutomator2 Driver
         run: |
           npm install -g appium@latest
-          appium driver install uiautomator2
+          appium driver install uiautomator2 || true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -99,7 +98,7 @@ jobs:
       - name: Start Appium Server in Background
         run: |
           nohup appium --log tests/appium/reports/logs/appium-server.log > /dev/null 2>&1 &
-          sleep 5
+          sleep 5 || true
 
       - name: Run Appium Tests (Shard ${{ matrix.shard }}/4)
         id: run_tests

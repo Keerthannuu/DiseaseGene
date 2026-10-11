@@ -1,11 +1,36 @@
+import os
+import urllib.request
+import json
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from tests.appium.config.config import settings
-import os
 
 class AppiumDriverFactory:
-    @staticmethod
-    def get_driver():
+    _server_checked = False
+    _server_available = False
+
+    @classmethod
+    def is_server_ready(cls, timeout=1.0):
+        if cls._server_checked:
+            return cls._server_available
+            
+        try:
+            url = f"{settings.APPIUM_SERVER_URL.rstrip('/')}/status"
+            req = urllib.request.Request(url, headers={"User-Agent": "pytest-check"})
+            with urllib.request.urlopen(req, timeout=timeout) as response:
+                if response.status == 200:
+                    cls._server_available = True
+        except Exception:
+            cls._server_available = False
+            
+        cls._server_checked = True
+        return cls._server_available
+
+    @classmethod
+    def get_driver(cls):
+        if not cls.is_server_ready():
+            raise ConnectionError(f"Appium server not reachable at {settings.APPIUM_SERVER_URL}")
+
         options = UiAutomator2Options()
         options.platform_name = settings.PLATFORM_NAME
         options.automation_name = settings.AUTOMATION_NAME
