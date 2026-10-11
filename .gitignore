@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Environment and Secrets
+.env
+*.pem
+*.key
+
+# Test Reports and Runtime Artifacts
+tests/**/reports/
+reports/
+.pytest_cache/
+htmlcov/
+.coverage
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
