@@ -1,4 +1,11 @@
-from appium.webdriver.common.appiumby import AppiumBy
+try:
+    from appium.webdriver.common.appiumby import AppiumBy
+except ImportError:
+    class AppiumBy:
+        XPATH = "xpath"
+        ID = "id"
+        CLASS_NAME = "class name"
+
 from tests.appium.screens.base_screen import BaseScreen
 
 class LoginScreen(BaseScreen):

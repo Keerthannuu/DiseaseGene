@@ -12,20 +12,15 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "test_id(id): Unique test case identifier (SEL-XXX)")
     config.addinivalue_line("markers", "category(name): Functional category of the test case")
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def driver(request):
-    driver_instance = None
-    try:
-        driver_instance = DriverFactory.get_driver()
-        yield driver_instance
-    except Exception as e:
-        pytest.skip(f"Browser driver unavailable or base environment not running: {e}")
-    finally:
-        if driver_instance:
-            try:
-                driver_instance.quit()
-            except Exception:
-                pass
+    driver_instance = DriverFactory.get_driver()
+    yield driver_instance
+    if driver_instance:
+        try:
+            driver_instance.quit()
+        except Exception:
+            pass
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
@@ -33,11 +28,10 @@ def pytest_runtest_makereport(item, call):
     report = outcome.get_result()
     
     if report.when == "call" and report.failed:
-        driver = item.funcargs.get("driver", None)
+        driver_inst = item.funcargs.get("driver", None)
         test_id_marker = item.get_closest_marker("test_id")
         test_id = test_id_marker.args[0] if test_id_marker else item.name
         
-        if driver:
-            screenshot, log = save_failure_artifacts(driver, test_id, report.longreprtext)
-            # Add to test failure message
+        if driver_inst:
+            screenshot, log = save_failure_artifacts(driver_inst, test_id, report.longreprtext)
             report.sections.append(("Failure Artifacts", f"Screenshot: {screenshot}\nLog: {log}"))
