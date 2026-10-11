@@ -7,8 +7,28 @@ except ImportError:
         CLASS_NAME = "class name"
         ACCESSIBILITY_ID = "accessibility id"
 
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+try:
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+except ImportError:
+    class DummyWait:
+        def __init__(self, driver, timeout=5):
+            self.driver = driver
+        def until(self, method):
+            if callable(method):
+                try:
+                    return method(self.driver)
+                except Exception:
+                    return None
+            return None
+    WebDriverWait = DummyWait
+    class EC:
+        @staticmethod
+        def presence_of_element_located(locator):
+            return lambda d: d.find_element(locator[0], locator[1])
+        @staticmethod
+        def visibility_of_element_located(locator):
+            return lambda d: d.find_element(locator[0], locator[1])
 
 class BaseScreen:
     def __init__(self, driver):

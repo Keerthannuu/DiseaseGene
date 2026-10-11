@@ -12,7 +12,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "test_id(id): Unique test case identifier (APP-XXX)")
     config.addinivalue_line("markers", "category(name): Functional category of the mobile test")
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def appium_driver(request):
     driver_instance = AppiumDriverFactory.get_driver()
     yield driver_instance
