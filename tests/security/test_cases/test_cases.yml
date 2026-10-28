@@ -1,0 +1,1807 @@
+test_cases:
+- id: SEC-001
+  category: headers
+  name: Strict-Transport-Security (HSTS) Header Presence
+  priority: critical
+  description: Inspect HSTS header on HTTPS responses
+  expected_result: max-age >= 31536000 and includeSubDomains present
+- id: SEC-002
+  category: headers
+  name: X-Content-Type-Options Header Verification
+  priority: high
+  description: Inspect X-Content-Type-Options header on API responses
+  expected_result: Header set to 'nosniff' preventing MIME sniffing
+- id: SEC-003
+  category: headers
+  name: X-Frame-Options Header Check
+  priority: high
+  description: Verify X-Frame-Options on web pages
+  expected_result: Header set to 'DENY' or 'SAMEORIGIN' preventing clickjacking
+- id: SEC-004
+  category: headers
+  name: Content-Security-Policy (CSP) Directives
+  priority: critical
+  description: Verify CSP header on web responses
+  expected_result: Valid CSP restricting default-src, script-src, object-src
+- id: SEC-005
+  category: headers
+  name: Referrer-Policy Header Check
+  priority: medium
+  description: Verify Referrer-Policy header
+  expected_result: Set to 'strict-origin-when-cross-origin' or 'no-referrer'
+- id: SEC-006
+  category: headers
+  name: Permissions-Policy Header Check
+  priority: medium
+  description: Verify Permissions-Policy header
+  expected_result: Restricts camera, microphone, geolocation APIs
+- id: SEC-007
+  category: headers
+  name: Server Banner Information Disclosure
+  priority: high
+  description: Inspect Server header on responses
+  expected_result: Server banner does not expose exact uvicorn/fastapi version
+- id: SEC-008
+  category: headers
+  name: X-Powered-By Header Suppression
+  priority: medium
+  description: Check for X-Powered-By header
+  expected_result: X-Powered-By header omitted from responses
+- id: SEC-009
+  category: headers
+  name: Cache-Control on Sensitive Endpoints (/auth/me)
+  priority: high
+  description: Check Cache-Control on /auth/me
+  expected_result: Set to 'no-store, no-cache, must-revalidate'
+- id: SEC-010
+  category: headers
+  name: Cache-Control on Login Endpoint (/auth/login)
+  priority: high
+  description: Check Cache-Control on /auth/login response
+  expected_result: Contains 'no-store' preventing credential caching
+- id: SEC-011
+  category: headers
+  name: Cache-Control on Admin Overview (/admin/overview)
+  priority: high
+  description: Check Cache-Control on /admin/overview
+  expected_result: Contains 'no-store' preventing data caching
+- id: SEC-012
+  category: headers
+  name: Access-Control-Allow-Origin Configuration
+  priority: critical
+  description: Check CORS headers with unauthorized origin
+  expected_result: Unauthorized origin rejected; wildcards not paired with credentials
+- id: SEC-013
+  category: headers
+  name: Access-Control-Allow-Credentials Security
+  priority: high
+  description: Verify allow_credentials behavior with wildcard origin
+  expected_result: Wildcard '*' disallowed when allow_credentials is true
+- id: SEC-014
+  category: headers
+  name: Access-Control-Allow-Methods Restrictions
+  priority: medium
+  description: Inspect allowed HTTP methods in CORS preflight
+  expected_result: Only necessary methods (GET, POST, PUT, DELETE, OPTIONS) allowed
+- id: SEC-015
+  category: headers
+  name: Access-Control-Allow-Headers Restrictions
+  priority: medium
+  description: Inspect allowed headers in CORS preflight
+  expected_result: Only Authorization, Content-Type, and needed headers allowed
+- id: SEC-016
+  category: headers
+  name: Access-Control-Max-Age Header Check
+  priority: low
+  description: Inspect CORS preflight max-age cache duration
+  expected_result: Max-age configured to reasonable duration (e.g., 600s)
+- id: SEC-017
+  category: transport
+  name: TLS 1.3 Protocol Support
+  priority: high
+  description: Check TLS version negotiation
+  expected_result: TLS 1.3 accepted for encrypted transport
+- id: SEC-018
+  category: transport
+  name: TLS 1.2 Protocol Support with Strong Ciphers
+  priority: high
+  description: Verify cipher suites on TLS 1.2
+  expected_result: Only secure cipher suites with forward secrecy allowed
+- id: SEC-019
+  category: transport
+  name: Insecure SSL v2/v3 and TLS 1.0/1.1 Rejection
+  priority: critical
+  description: Attempt connection using deprecated TLS versions
+  expected_result: Connection rejected by server
+- id: SEC-020
+  category: transport
+  name: HTTPS Redirection from Plain HTTP
+  priority: high
+  description: Send plain HTTP request to web portal
+  expected_result: Automatically redirected with 301/308 to HTTPS
+- id: SEC-021
+  category: headers
+  name: Cookie Secure Flag Verification
+  priority: high
+  description: Inspect Set-Cookie headers for session cookies
+  expected_result: '''Secure'' flag set on all sensitive cookies'
+- id: SEC-022
+  category: headers
+  name: Cookie HttpOnly Flag Verification
+  priority: high
+  description: Inspect Set-Cookie headers for authentication cookies
+  expected_result: '''HttpOnly'' flag set preventing JavaScript access'
+- id: SEC-023
+  category: headers
+  name: Cookie SameSite Flag Verification
+  priority: high
+  description: Inspect Set-Cookie SameSite attribute
+  expected_result: SameSite set to 'Lax' or 'Strict' preventing CSRF
+- id: SEC-024
+  category: headers
+  name: Cookie Domain Scope Restriction
+  priority: medium
+  description: Check Domain attribute on cookies
+  expected_result: Cookies restricted to exact application host
+- id: SEC-025
+  category: headers
+  name: Cookie Path Scope Restriction
+  priority: medium
+  description: Check Path attribute on cookies
+  expected_result: Cookies scoped appropriately to application root
+- id: SEC-026
+  category: headers
+  name: Cleartext Traffic Disallowed in Android Manifest
+  priority: critical
+  description: Inspect android:usesCleartextTraffic in AndroidManifest
+  expected_result: 'Cleartext traffic disallowed (cleartext: false)'
+- id: SEC-027
+  category: headers
+  name: Cross-Origin-Opener-Policy (COOP) Check
+  priority: low
+  description: Check COOP header
+  expected_result: Set to 'same-origin' or 'same-origin-allow-popups'
+- id: SEC-028
+  category: headers
+  name: Cross-Origin-Embedder-Policy (COEP) Check
+  priority: low
+  description: Check COEP header
+  expected_result: Properly configured for resource isolation
+- id: SEC-029
+  category: headers
+  name: Cross-Origin-Resource-Policy (CORP) Check
+  priority: low
+  description: Check CORP header
+  expected_result: Set to 'same-origin' or 'same-site'
+- id: SEC-030
+  category: headers
+  name: X-XSS-Protection Header Legacy Defense
+  priority: low
+  description: Check legacy X-XSS-Protection header
+  expected_result: Set to '1; mode=block' or omitted in favor of CSP
+- id: SEC-031
+  category: headers
+  name: X-Download-Options for IE8 / Legacy Browsers
+  priority: low
+  description: Check X-Download-Options header
+  expected_result: Set to 'noopen'
+- id: SEC-032
+  category: headers
+  name: X-DNS-Prefetch-Control Header Check
+  priority: low
+  description: Check X-DNS-Prefetch-Control header
+  expected_result: Set to 'off' on sensitive pages
+- id: SEC-033
+  category: headers
+  name: Expect-CT Certificate Transparency Header
+  priority: low
+  description: Inspect Expect-CT header if present
+  expected_result: Enforces certificate transparency
+- id: SEC-034
+  category: headers
+  name: ETag Header Information Leakage
+  priority: low
+  description: Inspect ETag generation algorithm
+  expected_result: ETag does not reveal inode or sensitive server metadata
+- id: SEC-035
+  category: headers
+  name: Content-Type Character Encoding Specification
+  priority: medium
+  description: Inspect Content-Type header on responses
+  expected_result: Specifies charset=utf-8 explicitly
+- id: SEC-036
+  category: headers
+  name: Security Headers on Error Responses (404/500)
+  priority: medium
+  description: Inspect headers on 404 and 500 error responses
+  expected_result: Security headers maintained even during error responses
+- id: SEC-037
+  category: headers
+  name: Security Headers on Static Assets
+  priority: low
+  description: Inspect headers on static JS/CSS files
+  expected_result: Cache-Control and X-Content-Type-Options present
+- id: SEC-038
+  category: headers
+  name: Security Headers on Redirect Responses (301/302)
+  priority: low
+  description: Inspect headers on redirect responses
+  expected_result: Security headers preserved on redirects
+- id: SEC-039
+  category: headers
+  name: No-Sniff on Uploaded File Responses
+  priority: high
+  description: Inspect responses from /backend/uploads
+  expected_result: X-Content-Type-Options nosniff enforced
+- id: SEC-040
+  category: headers
+  name: Content-Disposition Header on File Downloads
+  priority: high
+  description: Inspect Content-Disposition on CSV exports
+  expected_result: Set to 'attachment; filename=...' preventing in-browser execution
+- id: SEC-041
+  category: headers
+  name: Subresource Integrity (SRI) on CDN Scripts
+  priority: medium
+  description: Inspect script tags in frontend HTML
+  expected_result: External scripts include integrity hash and crossorigin attribute
+- id: SEC-042
+  category: headers
+  name: Robots.txt Sensitive Path Disallow
+  priority: low
+  description: Inspect /robots.txt configuration
+  expected_result: Restricts indexing of /admin and /api endpoints
+- id: SEC-043
+  category: headers
+  name: Security.txt RFC 9116 Policy File
+  priority: low
+  description: Inspect /.well-known/security.txt
+  expected_result: Provides security contact and disclosure policy
+- id: SEC-044
+  category: headers
+  name: CORS Preflight Caching Verification
+  priority: low
+  description: Verify Access-Control-Max-Age avoids excessive preflights
+  expected_result: Configured appropriately
+- id: SEC-045
+  category: headers
+  name: Comprehensive HTTP Security Header Score
+  priority: high
+  description: Audit overall security headers against Mozilla Observatory
+  expected_result: Achieves A/B grade on security header checklist
+- id: SEC-046
+  category: dependencies
+  name: pip-audit Scan on FastAPI Framework
+  priority: critical
+  description: Audit fastapi==0.104.1 for known CVE advisories
+  expected_result: No critical or high severity CVEs reported
+- id: SEC-047
+  category: dependencies
+  name: pip-audit Scan on Uvicorn ASGI Server
+  priority: critical
+  description: Audit uvicorn==0.24.0.post1 for known vulnerabilities
+  expected_result: No known RCE or HTTP smuggling CVEs
+- id: SEC-048
+  category: dependencies
+  name: pip-audit Scan on SQLAlchemy ORM
+  priority: high
+  description: Audit SQLAlchemy==2.0.23 for vulnerabilities
+  expected_result: No SQL injection or memory corruption CVEs
+- id: SEC-049
+  category: dependencies
+  name: pip-audit Scan on Pydantic Data Validator
+  priority: high
+  description: Audit pydantic==2.5.2 for security advisories
+  expected_result: No denial-of-service or ReDoS vulnerabilities
+- id: SEC-050
+  category: dependencies
+  name: pip-audit Scan on python-jose / PyJWT
+  priority: critical
+  description: Audit python-jose==3.5.0 and PyJWT==2.8.0
+  expected_result: No algorithm confusion or signature bypass CVEs
+- id: SEC-051
+  category: dependencies
+  name: pip-audit Scan on Passlib & Bcrypt
+  priority: critical
+  description: Audit passlib==1.7.4 and bcrypt==4.0.1
+  expected_result: Password hashing libraries free from critical flaws
+- id: SEC-052
+  category: dependencies
+  name: pip-audit Scan on Cryptography Library
+  priority: critical
+  description: Audit cryptography==47.0.0 for OpenSSL/crypto flaws
+  expected_result: Up-to-date cryptography package without known CVEs
+- id: SEC-053
+  category: dependencies
+  name: pip-audit Scan on Requests & HTTPX Libraries
+  priority: high
+  description: Audit requests==2.32.5 and httpx==0.25.2
+  expected_result: No SSRF or header injection vulnerabilities
+- id: SEC-054
+  category: dependencies
+  name: pip-audit Scan on Pandas & NumPy
+  priority: medium
+  description: Audit pandas==2.2.3 and numpy==1.26.4
+  expected_result: No arbitrary code execution in data parsing
+- id: SEC-055
+  category: dependencies
+  name: pip-audit Scan on Starlette Core
+  priority: high
+  description: Audit starlette==0.27.0 for multipart/header flaws
+  expected_result: No multipart form parsing vulnerabilities
+- id: SEC-056
+  category: dependencies
+  name: pip-audit Scan on Elasticsearch Client
+  priority: medium
+  description: Audit elasticsearch==8.11.0 client
+  expected_result: Client library secure against deserialization flaws
+- id: SEC-057
+  category: dependencies
+  name: pip-audit Full Requirements Scan
+  priority: critical
+  description: Execute pip-audit across all packages in backend/requirements.txt
+  expected_result: Zero unpatched high or critical vulnerabilities
+- id: SEC-058
+  category: dependencies
+  name: npm audit Scan on Next.js Framework
+  priority: critical
+  description: Audit next==14.2.15 for known CVE advisories
+  expected_result: No server-side request forgery or RSC vulnerabilities
+- id: SEC-059
+  category: dependencies
+  name: npm audit Scan on React & React-DOM
+  priority: critical
+  description: Audit react==18.2.0 and react-dom==18.2.0
+  expected_result: Core React packages free from known XSS flaws
+- id: SEC-060
+  category: dependencies
+  name: npm audit Scan on Axios HTTP Client
+  priority: high
+  description: Audit axios==1.6.2 for SSRF / prototype pollution
+  expected_result: No critical prototype pollution or SSRF CVEs
+- id: SEC-061
+  category: dependencies
+  name: npm audit Scan on Capacitor Android Core
+  priority: critical
+  description: Audit @capacitor/core and @capacitor/android 8.4.0
+  expected_result: Capacitor runtime secure against bridge bypass flaws
+- id: SEC-062
+  category: dependencies
+  name: npm audit Scan on Plotly.js Visualization
+  priority: medium
+  description: Audit plotly.js-dist-min==2.27.1
+  expected_result: No DOM-based XSS vulnerabilities in chart rendering
+- id: SEC-063
+  category: dependencies
+  name: npm audit Scan on D3.js Data Library
+  priority: medium
+  description: Audit d3==7.8.5 for security advisories
+  expected_result: D3 packages free from known security vulnerabilities
+- id: SEC-064
+  category: dependencies
+  name: npm audit Full Package.json Scan
+  priority: critical
+  description: Run npm audit in frontend directory
+  expected_result: Zero high or critical vulnerability findings
+- id: SEC-065
+  category: dependencies
+  name: Trivy Vulnerability Scan on Backend Filesystem
+  priority: critical
+  description: Scan backend directory with Trivy vulnerability scanner
+  expected_result: Trivy reports zero critical CVEs in packages
+- id: SEC-066
+  category: dependencies
+  name: Trivy Vulnerability Scan on Frontend Filesystem
+  priority: critical
+  description: Scan frontend directory with Trivy scanner
+  expected_result: Trivy reports zero critical CVEs in dependencies
+- id: SEC-067
+  category: dependencies
+  name: Trivy Config Scan for Misconfigurations
+  priority: high
+  description: Scan repository configuration files with Trivy config
+  expected_result: No insecure file permissions or dangerous flags
+- id: SEC-068
+  category: secrets
+  name: Trivy Secret Scanning in Repository
+  priority: critical
+  description: Scan entire git repository for committed secrets
+  expected_result: Zero API keys, passwords, or tokens found
+- id: SEC-069
+  category: secrets
+  name: Gitleaks Scan for Hardcoded Secrets
+  priority: critical
+  description: Run Gitleaks on all commits and files
+  expected_result: Zero private keys, AWS tokens, or JWT secrets found
+- id: SEC-070
+  category: secrets
+  name: Verification of .gitignore for Sensitive Files
+  priority: high
+  description: Verify .gitignore includes .env, *.db, *.log, certs
+  expected_result: .env and database credentials strictly excluded from git
+- id: SEC-071
+  category: secrets
+  name: Absence of Hardcoded Secret Keys in config.py
+  priority: critical
+  description: Inspect app/config.py for hardcoded default secrets
+  expected_result: SECRET_KEY read from environment variable with secure fallback
+- id: SEC-072
+  category: secrets
+  name: Absence of Database Passwords in Docker/Scripts
+  priority: critical
+  description: Inspect entrypoint.sh and script files
+  expected_result: No database passwords hardcoded in shell scripts
+- id: SEC-073
+  category: secrets
+  name: Absence of Email API Keys in email_service.py
+  priority: high
+  description: Inspect email service configuration
+  expected_result: Sendinblue / SMTP keys loaded strictly from env
+- id: SEC-074
+  category: dependencies
+  name: License Compliance Audit on Python Dependencies
+  priority: low
+  description: Audit licenses of Python requirements (MIT, Apache, BSD)
+  expected_result: All dependencies use permissible open-source licenses
+- id: SEC-075
+  category: dependencies
+  name: License Compliance Audit on Node Dependencies
+  priority: low
+  description: Audit licenses in package-lock.json
+  expected_result: No restrictive GPL or proprietary license conflicts
+- id: SEC-076
+  category: dependencies
+  name: Outdated Dependency Security Check
+  priority: medium
+  description: Check for deprecated or unmaintained packages
+  expected_result: Core dependencies maintained and receiving security updates
+- id: SEC-077
+  category: dependencies
+  name: Lockfile Integrity Verification (package-lock.json)
+  priority: high
+  description: Verify npm lockfile integrity hashes match registry
+  expected_result: All package hashes verify without tampering
+- id: SEC-078
+  category: dependencies
+  name: Lockfile Integrity Verification (skills-lock.json)
+  priority: medium
+  description: Inspect skills-lock.json integrity
+  expected_result: Lockfile adheres to expected schema
+- id: SEC-079
+  category: dependencies
+  name: Subresource Integrity (SRI) Check for Web Fonts
+  priority: low
+  description: Inspect external font imports
+  expected_result: Fonts loaded securely over HTTPS or bundled locally
+- id: SEC-080
+  category: dependencies
+  name: Transitive Dependency Vulnerability Scan
+  priority: high
+  description: Deep-scan nested dependency tree with pipdeptree
+  expected_result: No nested vulnerable packages undetected
+- id: SEC-081
+  category: dependencies
+  name: Phantom / Typo-squatting Package Name Audit
+  priority: medium
+  description: Verify package names match official PyPI/npm packages
+  expected_result: All package names correspond to legitimate projects
+- id: SEC-082
+  category: dependencies
+  name: Direct Dependency Pinning Verification
+  priority: high
+  description: Verify exact version pinning in requirements.txt
+  expected_result: Requirements pin exact semantic versions (==)
+- id: SEC-083
+  category: dependencies
+  name: Docker Base Image Security Assessment
+  priority: high
+  description: Inspect Dockerfile base image if present
+  expected_result: Uses official slim/alpine minimal security image
+- id: SEC-084
+  category: dependencies
+  name: CI Dependency Cache Integrity Verification
+  priority: medium
+  description: Verify CI cache keys include hash of lockfiles
+  expected_result: Cache invalidated immediately upon lockfile change
+- id: SEC-085
+  category: dependencies
+  name: Software Bill of Materials (SBOM) Generation
+  priority: medium
+  description: Generate CycloneDX / SPDX SBOM report
+  expected_result: Valid SBOM generated covering all components
+- id: SEC-086
+  category: sast
+  name: 'Bandit B101: Assert Statement Usage in Production'
+  priority: low
+  description: Scan Python codebase for assert statements in business logic
+  expected_result: No asserts used for critical validation
+- id: SEC-087
+  category: sast
+  name: 'Bandit B102: Exec Call Usage Audit'
+  priority: critical
+  description: Scan for dynamic code execution via exec()
+  expected_result: Zero occurrences of exec() in Python codebase
+- id: SEC-088
+  category: sast
+  name: 'Bandit B103: File Permissions Set to Insecure Mask'
+  priority: medium
+  description: Scan for chmod with world-writable permissions
+  expected_result: No insecure file permission modifications
+- id: SEC-089
+  category: sast
+  name: 'Bandit B104: Hardcoded Bind to 0.0.0.0'
+  priority: low
+  description: Check network socket bindings
+  expected_result: Configurable via environment variables
+- id: SEC-090
+  category: sast
+  name: 'Bandit B105: Hardcoded Password Strings in Code'
+  priority: high
+  description: Scan for hardcoded password variables
+  expected_result: No hardcoded plaintext password strings
+- id: SEC-091
+  category: sast
+  name: 'Bandit B106: Hardcoded Secret Key Assignment'
+  priority: high
+  description: Scan for literal secret key assignments
+  expected_result: Secrets loaded from settings/env
+- id: SEC-092
+  category: sast
+  name: 'Bandit B108: Insecure Temporary File Creation'
+  priority: medium
+  description: Scan for insecure /tmp file operations
+  expected_result: Uses secure tempfile modules where needed
+- id: SEC-093
+  category: sast
+  name: 'Bandit B301: Python Pickle Deserialization Flaw'
+  priority: critical
+  description: Scan for unsafe pickle.loads() usage
+  expected_result: Zero occurrences of pickle deserialization
+- id: SEC-094
+  category: sast
+  name: 'Bandit B302: Python Marshal Deserialization Flaw'
+  priority: critical
+  description: Scan for marshal.loads() usage
+  expected_result: Zero occurrences of marshal usage
+- id: SEC-095
+  category: sast
+  name: 'Bandit B303: Insecure MD5 / SHA1 Hash Algorithms'
+  priority: high
+  description: Scan for md5 or sha1 used for security/passwords
+  expected_result: Uses bcrypt / sha256; zero md5 for passwords
+- id: SEC-096
+  category: sast
+  name: 'Bandit B304: Insecure Cipher Usage (DES/RC4)'
+  priority: critical
+  description: Scan for obsolete cryptographic ciphers
+  expected_result: Zero legacy cipher usage
+- id: SEC-097
+  category: sast
+  name: 'Bandit B307: Unsafe Eval() Function Call'
+  priority: critical
+  description: Scan for eval() function calls
+  expected_result: Zero occurrences of eval() in codebase
+- id: SEC-098
+  category: sast
+  name: 'Bandit B310: Insecure urllib.urlopen Usage'
+  priority: high
+  description: Scan for unsafe URL open methods
+  expected_result: Uses requests/httpx with scheme verification
+- id: SEC-099
+  category: sast
+  name: 'Bandit B324: Hashlib Insecure Usage Without usedforsecurity'
+  priority: low
+  description: Inspect hashlib calls
+  expected_result: No insecure hashing in security contexts
+- id: SEC-100
+  category: sast
+  name: 'Bandit B602: Subprocess Call with shell=True'
+  priority: critical
+  description: Scan for subprocess.Popen/run with shell=True
+  expected_result: Zero occurrences of shell=True command injection risks
+- id: SEC-101
+  category: sast
+  name: 'Bandit B608: SQL Injection via String Concatenation'
+  priority: critical
+  description: Scan for raw SQL queries with string formatting
+  expected_result: All queries use SQLAlchemy ORM parameterized statements
+- id: SEC-102
+  category: sast
+  name: 'Bandit B701: Jinja2 Autoescape Configuration'
+  priority: medium
+  description: Scan template rendering configurations
+  expected_result: Autoescape enabled for all template contexts
+- id: SEC-103
+  category: sast
+  name: Bandit Full Repository Scan
+  priority: critical
+  description: Execute full Bandit scan with -r backend/app
+  expected_result: Bandit reports zero High or Critical severity findings
+- id: SEC-104
+  category: sast
+  name: 'Semgrep Rule: FastAPI CORS Wildcard with Credentials'
+  priority: critical
+  description: Semgrep rule checking allow_origins=['*'] with allow_credentials=True
+  expected_result: CORS origins properly restricted
+- id: SEC-105
+  category: sast
+  name: 'Semgrep Rule: Raw SQL Execution in SQLAlchemy'
+  priority: critical
+  description: Semgrep rule scanning for text() with formatted strings
+  expected_result: Zero unparameterized SQL queries
+- id: SEC-106
+  category: sast
+  name: 'Semgrep Rule: Path Traversal in File Uploads'
+  priority: critical
+  description: Semgrep rule scanning for path traversal via filename
+  expected_result: Upload filenames sanitized/prefixed with random uuid
+- id: SEC-107
+  category: sast
+  name: 'Semgrep Rule: Hardcoded JWT Secret Key'
+  priority: high
+  description: Semgrep rule checking for hardcoded JWT secret
+  expected_result: JWT secret loaded from settings
+- id: SEC-108
+  category: sast
+  name: 'Semgrep Rule: Unhandled Exception Stack Trace Leak'
+  priority: medium
+  description: Semgrep rule scanning for exception str(e) leakage in 500
+  expected_result: Exceptions handled without leaking internal details
+- id: SEC-109
+  category: sast
+  name: 'Semgrep Rule: Insecure Random Number Generator for OTP'
+  priority: high
+  description: Semgrep rule scanning for random.randint used for crypto
+  expected_result: OTP entropy verified; secure random recommended
+- id: SEC-110
+  category: sast
+  name: 'Semgrep Rule: Missing Authentication Decorator on Admin'
+  priority: critical
+  description: Semgrep rule checking admin endpoints have role checks
+  expected_result: Admin endpoints verify current_user.role == 'Admin'
+- id: SEC-111
+  category: sast
+  name: 'Semgrep Rule: OAuth2 Password Form Insecure Scope'
+  priority: low
+  description: Semgrep rule checking OAuth2 form handling
+  expected_result: Complies with standard password flow
+- id: SEC-112
+  category: sast
+  name: 'Semgrep Rule: Insecure Deserialization in Pydantic'
+  priority: medium
+  description: Semgrep rule scanning for arbitrary type validation
+  expected_result: Pydantic models declare explicit typed schemas
+- id: SEC-113
+  category: sast
+  name: 'Semgrep Rule: Unvalidated Redirects in FastAPI'
+  priority: medium
+  description: Semgrep rule scanning for RedirectResponse with user input
+  expected_result: Zero unvalidated open redirects
+- id: SEC-114
+  category: sast
+  name: 'Semgrep Rule: React dangerouslySetInnerHTML Usage'
+  priority: high
+  description: Semgrep rule scanning frontend for dangerouslySetInnerHTML
+  expected_result: HTML tags sanitized; no unescaped user content
+- id: SEC-115
+  category: sast
+  name: 'Semgrep Rule: Next.js Server-Side Request Forgery'
+  priority: high
+  description: Semgrep rule scanning for fetch() with dynamic user URL
+  expected_result: Zero unvalidated server-side URL fetches
+- id: SEC-116
+  category: sast
+  name: 'Semgrep Rule: Prototype Pollution in JavaScript'
+  priority: medium
+  description: Semgrep rule scanning for Object.assign with untrusted input
+  expected_result: No prototype pollution vectors detected
+- id: SEC-117
+  category: sast
+  name: 'Semgrep Rule: Insecure Regular Expressions (ReDoS)'
+  priority: medium
+  description: Semgrep rule checking for catastrophic backtracking regex
+  expected_result: Regular expressions linear time bounded
+- id: SEC-118
+  category: sast
+  name: Semgrep Full Repository Scan
+  priority: critical
+  description: Run Semgrep with p/security-audit ruleset
+  expected_result: Semgrep reports zero High/Critical security vulnerabilities
+- id: SEC-119
+  category: sast
+  name: ESLint Security Plugin Scan on Frontend
+  priority: medium
+  description: Run eslint-plugin-security on Next.js frontend code
+  expected_result: Zero high severity security findings in frontend
+- id: SEC-120
+  category: sast
+  name: Check for Commented-out Secrets / Credentials
+  priority: medium
+  description: Regex scan for comments like '# password = ...'
+  expected_result: Zero commented credentials in source files
+- id: SEC-121
+  category: sast
+  name: Check for Insecure HTTP URLs in Codebase
+  priority: low
+  description: Scan codebase for hardcoded 'http://' URLs
+  expected_result: Only localhost/mock URLs use http; external APIs use https
+- id: SEC-122
+  category: sast
+  name: Database Connection String Security in alembic.ini
+  priority: high
+  description: Inspect alembic.ini for hardcoded database passwords
+  expected_result: Alembic reads sqlalchemy.url from environment
+- id: SEC-123
+  category: sast
+  name: Check for Debug Mode Enabled in Production
+  priority: high
+  description: Inspect config.py for DEBUG=True flags
+  expected_result: Debug mode disabled by default
+- id: SEC-124
+  category: sast
+  name: Check for Insecure File Extensions in Uploads
+  priority: high
+  description: Scan upload handler for extension whitelisting
+  expected_result: Only CSV extensions allowed for data ingestion
+- id: SEC-125
+  category: sast
+  name: Static Code Security Assessment Summary
+  priority: critical
+  description: Compile combined Bandit + Semgrep SAST score
+  expected_result: SAST compliance 100% with all rules passing
+- id: SEC-126
+  category: auth
+  name: JWT Algorithm Confusion Defense (None Algorithm)
+  priority: critical
+  description: 'Submit JWT token with ''alg'': ''none'''
+  expected_result: Token rejected with 401 Unauthorized
+- id: SEC-127
+  category: auth
+  name: JWT Algorithm Confusion Defense (RS256 vs HS256)
+  priority: critical
+  description: Submit HMAC-signed token against RSA public key endpoint
+  expected_result: Rejected due to algorithm mismatch
+- id: SEC-128
+  category: auth
+  name: JWT Signature Tampering Defense
+  priority: critical
+  description: Alter payload in valid JWT without re-signing
+  expected_result: Rejected due to invalid cryptographic signature
+- id: SEC-129
+  category: auth
+  name: JWT Expiration (exp) Claim Enforcement
+  priority: critical
+  description: Submit expired JWT token (exp in past)
+  expected_result: Rejected with 401 'Token expired'
+- id: SEC-130
+  category: auth
+  name: JWT Not Before (nbf) Claim Enforcement
+  priority: high
+  description: Submit JWT with nbf timestamp in future
+  expected_result: Rejected with 401 'Token not yet valid'
+- id: SEC-131
+  category: auth
+  name: JWT Missing Subject (sub) Claim Handling
+  priority: high
+  description: Submit JWT token omitting 'sub' username claim
+  expected_result: Rejected with 401 'Could not validate credentials'
+- id: SEC-132
+  category: auth
+  name: JWT Weak Secret Key Brute Force Resistance
+  priority: critical
+  description: Test if JWT secret key can be cracked via wordlist
+  expected_result: Secret key has sufficient entropy (> 256 bits)
+- id: SEC-133
+  category: auth
+  name: Password Hashing Algorithm Verification
+  priority: critical
+  description: Inspect stored password_hash column in User table
+  expected_result: Passwords hashed using bcrypt with work factor >= 12
+- id: SEC-134
+  category: auth
+  name: Absence of Plaintext Passwords in DB / Logs
+  priority: critical
+  description: Inspect database and server logs during login
+  expected_result: Zero plaintext passwords logged or persisted
+- id: SEC-135
+  category: auth
+  name: Password Complexity Policy Enforcement (Length)
+  priority: high
+  description: Attempt to register with password of 7 characters
+  expected_result: Rejected with 400 'Password must be at least 8 characters'
+- id: SEC-136
+  category: auth
+  name: Password Complexity Policy Enforcement (Uppercase)
+  priority: medium
+  description: Attempt to register without uppercase character
+  expected_result: Rejected with 400 'Password must contain uppercase letter'
+- id: SEC-137
+  category: auth
+  name: Password Complexity Policy Enforcement (Digits)
+  priority: medium
+  description: Attempt to register without numeric digits
+  expected_result: Rejected with 400 'Password must contain at least one number'
+- id: SEC-138
+  category: auth
+  name: Password Complexity Policy Enforcement (Special Chars)
+  priority: medium
+  description: Attempt to register without special character
+  expected_result: Rejected with 400 'Password must contain special character'
+- id: SEC-139
+  category: auth
+  name: User Enumeration Defense on Login Endpoint
+  priority: high
+  description: Compare response times and messages for valid vs invalid user
+  expected_result: Returns identical 'Incorrect username or password' in similar time
+- id: SEC-140
+  category: auth
+  name: User Enumeration Defense on Forgot Password
+  priority: high
+  description: Submit non-existent email to /api/v1/auth/forgot-password
+  expected_result: Returns identical generic success message to prevent user probing
+- id: SEC-141
+  category: auth
+  name: OTP Code Entropy & Randomness Verification
+  priority: high
+  description: Verify OTP generation code in auth.py
+  expected_result: Generates 6-digit cryptographic code (100000 - 999999)
+- id: SEC-142
+  category: auth
+  name: OTP Code Expiration Enforcement
+  priority: high
+  description: Attempt to use OTP after expiration window
+  expected_result: Rejected with 400 'Invalid or expired OTP'
+- id: SEC-143
+  category: auth
+  name: OTP Single-Use Enforcement (Replay Attack Defense)
+  priority: critical
+  description: Attempt to reuse valid OTP twice for password reset
+  expected_result: Second attempt fails as verification_code cleared to None
+- id: SEC-144
+  category: auth
+  name: OTP Brute Force Rate Limiting
+  priority: high
+  description: Submit 100 rapid incorrect OTP guesses
+  expected_result: Requests rate limited to prevent brute forcing 6-digit codes
+- id: SEC-145
+  category: auth
+  name: Account Takeover via Parameter Tampering on Reset
+  priority: critical
+  description: Submit password reset specifying different email in body
+  expected_result: Cannot reset password of another user without their OTP
+- id: SEC-146
+  category: auth
+  name: IDOR Defense on /api/v1/auth/me Endpoint
+  priority: critical
+  description: Attempt to fetch another user profile by tampering params
+  expected_result: Endpoint extracts identity strictly from verified JWT subject
+- id: SEC-147
+  category: auth
+  name: 'RBAC: Researcher Role Access to Admin Overview'
+  priority: critical
+  description: Send GET /api/v1/admin/overview with Researcher JWT
+  expected_result: HTTP 403 Forbidden 'Admin access required'
+- id: SEC-148
+  category: auth
+  name: 'RBAC: Researcher Role Access to Admin Profile Update'
+  priority: critical
+  description: Send PUT /api/v1/admin/profile with Researcher JWT
+  expected_result: HTTP 403 Forbidden 'Admin access required'
+- id: SEC-149
+  category: auth
+  name: 'RBAC: Unauthenticated Access to Admin Overview'
+  priority: critical
+  description: Send GET /api/v1/admin/overview without Authorization header
+  expected_result: HTTP 401 Unauthorized 'Not authenticated'
+- id: SEC-150
+  category: auth
+  name: 'RBAC: Unauthenticated Access to /auth/me'
+  priority: critical
+  description: Send GET /api/v1/auth/me without token
+  expected_result: HTTP 401 Unauthorized 'Not authenticated'
+- id: SEC-151
+  category: auth
+  name: Privilege Escalation via Registration Body Role Injection
+  priority: critical
+  description: Submit role='Admin' inside registration request payload
+  expected_result: Server ignores role in body; assigns Researcher (or Admin only
+    if user_count==0)
+- id: SEC-152
+  category: auth
+  name: Privilege Escalation via JWT Role Claim Tampering
+  priority: critical
+  description: Sign custom JWT with role='Admin' using wrong key
+  expected_result: Rejected due to invalid signature
+- id: SEC-153
+  category: auth
+  name: Unauthorized Favorite Gene Mutation
+  priority: high
+  description: Send POST /api/v1/genes/{id}/favorite without token
+  expected_result: HTTP 401 Unauthorized 'Authentication required'
+- id: SEC-154
+  category: auth
+  name: Unauthorized Favorite Gene Deletion
+  priority: high
+  description: Send DELETE /api/v1/genes/{id}/favorite without token
+  expected_result: HTTP 401 Unauthorized 'Authentication required'
+- id: SEC-155
+  category: auth
+  name: 'IDOR on Favorite Gene: Delete Other User''s Favorite'
+  priority: high
+  description: Attempt to delete favorite belonging to different user
+  expected_result: Endpoint restricts deletion to current_user.user_id
+- id: SEC-156
+  category: auth
+  name: Clear Stuck User Endpoint Access Controls
+  priority: medium
+  description: Audit access permissions on /clear-stuck-user
+  expected_result: Cleanup restricted or audited
+- id: SEC-157
+  category: auth
+  name: Session Invalidation on Password Change
+  priority: high
+  description: Verify previously issued JWT behavior after password reset
+  expected_result: Password hash change prevents continued unauthorized session
+- id: SEC-158
+  category: auth
+  name: Concurrent Session Handling Security
+  priority: low
+  description: Inspect simultaneous active sessions for user
+  expected_result: Handles multiple sessions safely
+- id: SEC-159
+  category: auth
+  name: Session Fixation Attack Defense
+  priority: high
+  description: Verify new token generated upon authentication
+  expected_result: Fresh JWT token issued upon every successful login
+- id: SEC-160
+  category: auth
+  name: Bearer Token Format Compliance
+  priority: medium
+  description: Submit token with scheme 'Basic' or 'Token' instead of 'Bearer'
+  expected_result: FastAPI OAuth2 rejects unsupported auth scheme
+- id: SEC-161
+  category: auth
+  name: Empty Bearer Token Handling
+  priority: low
+  description: 'Submit ''Authorization: Bearer '' with empty string'
+  expected_result: HTTP 401 returned immediately
+- id: SEC-162
+  category: auth
+  name: Authorization Header Injection / Line Folding
+  priority: medium
+  description: Inject CRLF characters into Authorization header
+  expected_result: Rejected as invalid HTTP header
+- id: SEC-163
+  category: auth
+  name: Username Case Sensitivity & Normalization
+  priority: medium
+  description: Register 'Researcher1' and attempt 'researcher1'
+  expected_result: Properly handles case collisions and normalization
+- id: SEC-164
+  category: auth
+  name: Email Case Normalization in Registration
+  priority: medium
+  description: Register with uppercase email 'USER@DOMAIN.COM'
+  expected_result: Email normalized preventing duplicate accounts
+- id: SEC-165
+  category: auth
+  name: Email Regex Validation Conformance
+  priority: medium
+  description: Submit malformed emails to registration endpoint
+  expected_result: email-validator rejects invalid syntax
+- id: SEC-166
+  category: auth
+  name: OAuth2 Content-Type Enforcement
+  priority: low
+  description: Send JSON body to /api/v1/auth/login
+  expected_result: FastAPI requires application/x-www-form-urlencoded
+- id: SEC-167
+  category: auth
+  name: OAuth2 Scope Enforcement
+  priority: low
+  description: Inspect requested scopes in token generation
+  expected_result: Scopes validated according to role capabilities
+- id: SEC-168
+  category: auth
+  name: Password Hash Timing Attack Resistance
+  priority: high
+  description: Measure execution time of passlib verify_password
+  expected_result: Bcrypt constant-time verification protects against timing attacks
+- id: SEC-169
+  category: auth
+  name: Default Admin Account Credentials Audit
+  priority: critical
+  description: Verify no default admin/admin accounts in database seeds
+  expected_result: Seeds require explicit setup; no default hardcoded passwords
+- id: SEC-170
+  category: auth
+  name: SQL Injection via Login Username Field
+  priority: critical
+  description: Submit "' OR 1=1 --" in login username input
+  expected_result: SQLAlchemy parameterized query treats input as literal string;
+    login fails safely
+- id: SEC-171
+  category: auth
+  name: SQL Injection via Login Password Field
+  priority: critical
+  description: Submit SQL injection payload in password field
+  expected_result: Password compared via bcrypt against hashed value; zero SQL execution
+- id: SEC-172
+  category: auth
+  name: Admin Update Profile Target Verification
+  priority: high
+  description: Verify PUT /admin/profile updates only the calling admin
+  expected_result: db.merge(current_user) modifies only authenticated user
+- id: SEC-173
+  category: auth
+  name: User Email Verification Flag Integrity
+  priority: medium
+  description: Check email_verified state assignment
+  expected_result: Set according to business logic
+- id: SEC-174
+  category: auth
+  name: Registration Rate Limiting / DoS Defense
+  priority: high
+  description: Submit 1,000 rapid user registrations
+  expected_result: Rate limiting restricts automated account flooding
+- id: SEC-175
+  category: auth
+  name: Comprehensive Authentication Security Audit
+  priority: critical
+  description: Evaluate complete authentication and RBAC attack surface
+  expected_result: All OWASP ASVS Level 2 authentication controls satisfied
+- id: SEC-176
+  category: injection
+  name: 'SQL Injection Defense: Search Query ''q'' Parameter'
+  priority: critical
+  description: Send GET /api/v1/search?q=1'%20OR%20'1'='1
+  expected_result: SQLAlchemy parameterizes query; returns zero or valid matches without
+    SQL error
+- id: SEC-177
+  category: injection
+  name: 'SQL Injection Defense: Search Union Based Exploit'
+  priority: critical
+  description: Send GET /api/v1/search?q=' UNION SELECT 1,username,password_hash FROM
+    users--
+  expected_result: Query treated as search text; no data leakage
+- id: SEC-178
+  category: injection
+  name: 'SQL Injection Defense: Search Time-Based Blind Exploit'
+  priority: critical
+  description: Send GET /api/v1/search?q=BRCA1' AND (SELECT 1 FROM (SELECT(SLEEP(5)))a)--
+  expected_result: Query finishes without delay; sleep command not executed
+- id: SEC-179
+  category: injection
+  name: 'SQL Injection Defense: Gene Chromosome Filter'
+  priority: critical
+  description: Send GET /api/v1/genes?chromosome=1'%20OR%201=1--
+  expected_result: Filter treated as literal chromosome string; no data leak
+- id: SEC-180
+  category: injection
+  name: 'SQL Injection Defense: Gene ID Path Parameter'
+  priority: critical
+  description: Send GET /api/v1/genes/BRCA1'%20OR%20'1'='1
+  expected_result: Returns 404 Gene not found; zero SQL error
+- id: SEC-181
+  category: injection
+  name: 'SQL Injection Defense: Disease ID Path Parameter'
+  priority: critical
+  description: Send GET /api/v1/diseases/DIS001'%20OR%20'1'='1
+  expected_result: Returns 404 Disease not found
+- id: SEC-182
+  category: injection
+  name: 'SQL Injection Defense: Variant Mutation Type Filter'
+  priority: high
+  description: Send GET /api/v1/variants?mutation_type=' OR 1=1--
+  expected_result: Treated as literal filter string
+- id: SEC-183
+  category: injection
+  name: 'SQL Injection Defense: Variant Clinical Significance Filter'
+  priority: high
+  description: Send GET /api/v1/variants?clinical_significance=' OR 1=1--
+  expected_result: Treated as literal filter string
+- id: SEC-184
+  category: injection
+  name: 'SQL Injection Defense: Association Evidence Level Filter'
+  priority: high
+  description: Send GET /api/v1/associations?evidence_level=' OR 1=1--
+  expected_result: Treated as literal filter string
+- id: SEC-185
+  category: injection
+  name: 'SQL Injection Defense: Stats Endpoint SQL Group-By'
+  priority: high
+  description: Inspect SQL aggregation queries in get_stats()
+  expected_result: Aggregations use ORM models (func.count) safely
+- id: SEC-186
+  category: injection
+  name: 'SQL Injection Defense: Clear Stuck User Email Param'
+  priority: critical
+  description: Send DELETE /api/v1/auth/clear-stuck-user?email=' OR 1=1--
+  expected_result: Filters by literal email without deleting entire table
+- id: SEC-187
+  category: xss
+  name: 'XSS Defense: Stored XSS in User Registration Username'
+  priority: critical
+  description: Register username '<script>alert(document.cookie)</script>'
+  expected_result: Characters escaped in responses; script does not execute in browser
+- id: SEC-188
+  category: xss
+  name: 'XSS Defense: Stored XSS in User Registration Email'
+  priority: high
+  description: Register email with script tags
+  expected_result: Rejected by email format validation
+- id: SEC-189
+  category: xss
+  name: 'XSS Defense: Stored XSS in Admin Profile Update'
+  priority: high
+  description: Update admin username to '<img src=x onerror=alert(1)>'
+  expected_result: Payload escaped on render in UI components
+- id: SEC-190
+  category: xss
+  name: 'XSS Defense: Reflected XSS in Search Query Parameter'
+  priority: critical
+  description: Send GET /api/v1/search?q=<script>alert('XSS')</script>
+  expected_result: Frontend escapes search snippet; HTML entities encoded
+- id: SEC-191
+  category: xss
+  name: 'XSS Defense: Reflected XSS in Search Highlighting Tags'
+  priority: high
+  description: Inspect pre_tags and post_tags in search highlight
+  expected_result: Highlight tags use controlled CSS classes without script execution
+- id: SEC-192
+  category: xss
+  name: 'XSS Defense: Reflected XSS in 404 Error Detail Messages'
+  priority: medium
+  description: Navigate to /api/v1/genes/<svg/onload=alert(1)>
+  expected_result: 404 detail returned as JSON string without HTML rendering
+- id: SEC-193
+  category: xss
+  name: 'XSS Defense: Reflected XSS in URL Fragment / Hash'
+  priority: medium
+  description: 'Navigate to frontend URL with #<script>alert(1)</script>'
+  expected_result: React/Next.js sanitizes router query and hash parameters
+- id: SEC-194
+  category: xss
+  name: DOM-based XSS Defense in D3 / Plotly Renderers
+  priority: medium
+  description: Pass XSS payload into chart label attributes
+  expected_result: Plotly / D3 render text safely without innerHTML exploitation
+- id: SEC-195
+  category: traversal
+  name: 'Path Traversal Defense: Uploaded Files Directory'
+  priority: critical
+  description: Request /backend/uploads/../../../../etc/passwd
+  expected_result: Path traversal rejected or blocked by static file handler
+- id: SEC-196
+  category: traversal
+  name: 'Path Traversal Defense: File Ingestion Script'
+  priority: critical
+  description: Attempt file upload with filename '../../secret.txt'
+  expected_result: Filename sanitized; directory traversal blocked
+- id: SEC-197
+  category: injection
+  name: CSV Formula Injection Defense (CSV Injection)
+  priority: high
+  description: Upload CSV containing cells '=cmd|' /C calc'!A0'
+  expected_result: Cell formulas sanitized or prefixed with quote when exported
+- id: SEC-198
+  category: input-validation
+  name: CSV Ingestion Malformed Header Handling
+  priority: medium
+  description: Upload CSV missing required schema columns
+  expected_result: Ingestion rejects file with 400 validation error
+- id: SEC-199
+  category: dos
+  name: CSV Ingestion File Size Limitation
+  priority: high
+  description: Attempt to upload 500MB file to uploads directory
+  expected_result: Server rejects payload exceeding maximum body size (413 Payload
+    Too Large)
+- id: SEC-200
+  category: input-validation
+  name: CSV Ingestion Empty File Handling
+  priority: low
+  description: Upload 0-byte CSV file
+  expected_result: Ingestion rejects empty file gracefully
+- id: SEC-201
+  category: input-validation
+  name: CSV Ingestion Non-CSV File Type Rejection
+  priority: medium
+  description: Upload executable .exe renamed to .csv
+  expected_result: MIME type and file header validation rejects non-text files
+- id: SEC-202
+  category: dos
+  name: JSON Deserialization Bomb Defense (Deep Nesting)
+  priority: medium
+  description: Send JSON payload with 1,000 levels of nested objects
+  expected_result: FastAPI parser rejects deeply nested payloads preventing stack
+    overflow
+- id: SEC-203
+  category: dos
+  name: JSON Payload Size Limit Enforcement
+  priority: medium
+  description: Send 50MB JSON payload to registration endpoint
+  expected_result: Server rejects oversized request body with 413
+- id: SEC-204
+  category: input-validation
+  name: Query Parameter Integer Overflow Defense
+  priority: medium
+  description: Send GET /api/v1/genes?skip=99999999999999999999999
+  expected_result: FastAPI Pydantic validates integer range; returns 422
+- id: SEC-205
+  category: input-validation
+  name: Negative Integer Parameter Handling
+  priority: medium
+  description: Send GET /api/v1/genes?limit=-10&skip=-5
+  expected_result: FastAPI validates non-negative integers; returns 422
+- id: SEC-206
+  category: dos
+  name: Excessive Pagination Limit Parameter Handling
+  priority: high
+  description: Send GET /api/v1/genes?limit=10000000
+  expected_result: Server caps maximum limit parameter to prevent memory exhaustion
+- id: SEC-207
+  category: api
+  name: HTTP Method Tampering Defense (HEAD, TRACE, TRACK)
+  priority: medium
+  description: Send HTTP TRACE request to API endpoints
+  expected_result: HTTP 405 Method Not Allowed; TRACE debugging disabled
+- id: SEC-208
+  category: api
+  name: 'HTTP Verb Tampering: POST Endpoint via GET'
+  priority: low
+  description: Send GET to POST-only /api/v1/auth/register
+  expected_result: HTTP 405 Method Not Allowed
+- id: SEC-209
+  category: api
+  name: 'HTTP Verb Tampering: DELETE Endpoint via GET'
+  priority: low
+  description: Send GET to DELETE /api/v1/genes/{id}/favorite
+  expected_result: HTTP 405 Method Not Allowed
+- id: SEC-210
+  category: api
+  name: Content-Type Header Spoofing Defense
+  priority: medium
+  description: 'Send XML payload with ''Content-Type: application/json'''
+  expected_result: Pydantic JSON parser fails gracefully with 422
+- id: SEC-211
+  category: api
+  name: Missing Content-Type Header on POST Requests
+  priority: low
+  description: Send POST request omitting Content-Type header
+  expected_result: FastAPI returns 422 Unprocessable Entity
+- id: SEC-212
+  category: api
+  name: Host Header Injection Defense
+  priority: high
+  description: 'Send request with forged Host: evil-phishing.com'
+  expected_result: Server rejects or ignores untrusted host headers
+- id: SEC-213
+  category: api
+  name: Server-Side Request Forgery (SSRF) Defense in Email Service
+  priority: critical
+  description: Verify email service does not accept arbitrary webhook URLs
+  expected_result: Email dispatched strictly to configured SMTP / Brevo servers
+- id: SEC-214
+  category: injection
+  name: Elasticsearch Query Injection Defense
+  priority: critical
+  description: Send crafted Elasticsearch bool/match payload in search
+  expected_result: Query sanitized before submitting to Elasticsearch multi_match
+- id: SEC-215
+  category: dos
+  name: Elasticsearch Denial-of-Service Fuzzing
+  priority: medium
+  description: Send wildcard regex query '*.*' to search
+  expected_result: Query execution bounded by timeout and fuzzy limits
+- id: SEC-216
+  category: info-leak
+  name: Information Disclosure in 500 Error Responses
+  priority: critical
+  description: Trigger unexpected exception on server
+  expected_result: Response returns generic 500 error; zero Python tracebacks exposed
+- id: SEC-217
+  category: info-leak
+  name: Information Disclosure in Database Error Responses
+  priority: high
+  description: Trigger database constraint violation
+  expected_result: Response returns sanitized 400 error; zero raw SQL strings exposed
+- id: SEC-218
+  category: info-leak
+  name: Internal IP Address Disclosure in Headers/Body
+  priority: medium
+  description: Audit response bodies and headers for private 10.x/192.168.x IPs
+  expected_result: Zero internal infrastructure IP addresses exposed
+- id: SEC-219
+  category: info-leak
+  name: Source Code Disclosure via .git / Backup Files
+  priority: high
+  description: Attempt GET /.git/config and GET /app.db.bak
+  expected_result: HTTP 404 returned; sensitive source files blocked
+- id: SEC-220
+  category: info-leak
+  name: Database File Direct Download Block
+  priority: critical
+  description: Attempt direct GET /disease_gene_map.db or /app.db
+  expected_result: HTTP 404 returned; database files not served by web server
+- id: SEC-221
+  category: info-leak
+  name: Environment File Direct Download Block
+  priority: critical
+  description: Attempt direct GET /.env or GET /.env.example
+  expected_result: Static server rejects hidden and dot-files
+- id: SEC-222
+  category: info-leak
+  name: Log File Direct Download Block
+  priority: critical
+  description: Attempt direct GET /etl_ingestion.log
+  expected_result: Log files not accessible via HTTP endpoints
+- id: SEC-223
+  category: info-leak
+  name: OpenAPI Documentation Access Controls
+  priority: low
+  description: Verify OpenAPI schema does not expose secret keys or passwords
+  expected_result: Schema defines data models without exposing credentials
+- id: SEC-224
+  category: dos
+  name: Rate Limiting on Search Endpoint
+  priority: high
+  description: Send 500 rapid search requests per second
+  expected_result: Rate limiting protects search engine from resource exhaustion
+- id: SEC-225
+  category: dos
+  name: Rate Limiting on Stats Endpoint
+  priority: medium
+  description: Send rapid requests to computationally heavy /stats
+  expected_result: Heavy aggregation queries throttled
+- id: SEC-226
+  category: api
+  name: CORS Wildcard with Preflight Verification
+  priority: high
+  description: Verify allowed origins match trusted frontend domains
+  expected_result: Origins configured via settings.BACKEND_CORS_ORIGINS
+- id: SEC-227
+  category: api
+  name: CORS Null Origin Handling
+  priority: high
+  description: 'Send request with ''Origin: null'''
+  expected_result: Rejected; null origin not permitted access
+- id: SEC-228
+  category: api
+  name: CORS Subdomain Takeover Defense
+  priority: medium
+  description: 'Send request with ''Origin: attacker.diseasegenemap.com'''
+  expected_result: Only explicitly trusted domain names allowed
+- id: SEC-229
+  category: api
+  name: JSON Parsing Prototype Pollution in Backend
+  priority: low
+  description: Send JSON with '__proto__' keys to API endpoints
+  expected_result: Pydantic parses into strongly typed Python objects without pollution
+- id: SEC-230
+  category: input-validation
+  name: Unicode Normalization Vulnerability Defense
+  priority: medium
+  description: Send homoglyph / visual spoofing characters in usernames
+  expected_result: Strings normalized properly before database query
+- id: SEC-231
+  category: injection
+  name: Null Byte Injection Defense in File Paths
+  priority: high
+  description: Send filename containing '%00.csv'
+  expected_result: Null bytes rejected by file handler
+- id: SEC-232
+  category: input-validation
+  name: HTTP Parameter Pollution (HPP) Defense
+  priority: medium
+  description: Send duplicate parameters '?q=val1&q=val2'
+  expected_result: FastAPI handles list or uses first value consistently
+- id: SEC-233
+  category: injection
+  name: XML External Entity (XXE) Injection Defense
+  priority: critical
+  description: Submit XML payload with DOCTYPE entity definition
+  expected_result: XML parsing disabled; application accepts only JSON
+- id: SEC-234
+  category: api
+  name: Mass Assignment Vulnerability Defense in User Registration
+  priority: critical
+  description: Include unmapped fields like is_superuser=True in registration
+  expected_result: Pydantic UserCreate strictly filters fields; extra keys ignored
+- id: SEC-235
+  category: api
+  name: Mass Assignment Defense in Admin Profile Update
+  priority: critical
+  description: Include role='SuperAdmin' in UpdateProfileRequest
+  expected_result: UpdateProfileRequest accepts strictly username and email
+- id: SEC-236
+  category: auth
+  name: Session Expiry Token Revocation Check
+  priority: high
+  description: Attempt to access API with expired token after logout
+  expected_result: Request rejected with 401 Unauthorized
+- id: SEC-237
+  category: auth
+  name: Unauthenticated Download of Exported CSV Data
+  priority: medium
+  description: Attempt to download database export without credentials
+  expected_result: Export endpoints require valid user session
+- id: SEC-238
+  category: dos
+  name: Slowloris HTTP Denial-of-Service Defense
+  priority: high
+  description: Send incomplete HTTP headers slowly to server
+  expected_result: Uvicorn connection timeout drops stalled connections
+- id: SEC-239
+  category: api
+  name: HTTP Request Smuggling Defense
+  priority: critical
+  description: Send conflicting Content-Length and Transfer-Encoding headers
+  expected_result: Uvicorn/ASGI server rejects ambiguous smuggling headers
+- id: SEC-240
+  category: api
+  name: Comprehensive API Security SLA Verification
+  priority: critical
+  description: Audit entire API against OWASP API Security Top 10 2023
+  expected_result: All 10 risk categories mitigated with automated controls
+- id: SEC-241
+  category: zap
+  name: 'ZAP Passive Scan: Directory Browsing Enabled'
+  priority: high
+  description: ZAP passive rule 10015 scanning directory listings
+  expected_result: Directory browsing disabled across all web directories
+- id: SEC-242
+  category: zap
+  name: 'ZAP Passive Scan: Cross-Domain Misconfiguration'
+  priority: medium
+  description: ZAP passive rule 10098 scanning crossdomain.xml
+  expected_result: No insecure cross-domain policy files hosted
+- id: SEC-243
+  category: zap
+  name: 'ZAP Passive Scan: Vulnerable JS Library Detection'
+  priority: high
+  description: ZAP passive rule 10003 scanning client JS libraries
+  expected_result: All bundled JS libraries free from known Retire.js CVEs
+- id: SEC-244
+  category: zap
+  name: 'ZAP Passive Scan: Insecure Cookie Without HttpOnly'
+  priority: high
+  description: ZAP passive rule 10010 scanning Set-Cookie headers
+  expected_result: Zero authentication cookies missing HttpOnly flag
+- id: SEC-245
+  category: zap
+  name: 'ZAP Passive Scan: Insecure Cookie Without Secure Flag'
+  priority: high
+  description: ZAP passive rule 10011 scanning Set-Cookie headers
+  expected_result: Zero sensitive cookies missing Secure flag
+- id: SEC-246
+  category: zap
+  name: 'ZAP Passive Scan: Insecure Cookie Without SameSite'
+  priority: high
+  description: ZAP passive rule 10054 scanning Set-Cookie SameSite
+  expected_result: All cookies specify SameSite attribute
+- id: SEC-247
+  category: zap
+  name: 'ZAP Passive Scan: Password Autocomplete in HTML'
+  priority: low
+  description: ZAP passive rule 10025 scanning form inputs
+  expected_result: Password fields configure autocomplete='current-password'/'new-password'
+- id: SEC-248
+  category: zap
+  name: 'ZAP Passive Scan: Private IP Address Disclosure'
+  priority: medium
+  description: ZAP passive rule 10037 scanning response text
+  expected_result: Zero internal IPv4/IPv6 private addresses leaked
+- id: SEC-249
+  category: zap
+  name: 'ZAP Passive Scan: Session ID in URL Rewrite'
+  priority: high
+  description: ZAP passive rule 10043 scanning URL parameters
+  expected_result: Zero session tokens or JWTs transmitted in URL query strings
+- id: SEC-250
+  category: zap
+  name: 'ZAP Passive Scan: Script Active Content in SVG'
+  priority: medium
+  description: ZAP passive rule 10044 scanning SVG images
+  expected_result: Zero executable JavaScript in image assets
+- id: SEC-251
+  category: zap
+  name: 'ZAP Passive Scan: Source Code Disclosure in Comments'
+  priority: low
+  description: ZAP passive rule 10027 scanning HTML comments
+  expected_result: Zero sensitive SQL, credentials, or internal paths in HTML comments
+- id: SEC-252
+  category: zap
+  name: 'ZAP Passive Scan: Missing Anti-Clickjacking Header'
+  priority: high
+  description: ZAP passive rule 10020 scanning X-Frame-Options/CSP
+  expected_result: Clickjacking protection present on all rendered pages
+- id: SEC-253
+  category: zap
+  name: 'ZAP Passive Scan: X-Content-Type-Options Missing'
+  priority: medium
+  description: ZAP passive rule 10021 scanning nosniff header
+  expected_result: nosniff header present on all API and asset responses
+- id: SEC-254
+  category: zap
+  name: 'ZAP Passive Scan: Content-Security-Policy Missing'
+  priority: high
+  description: ZAP passive rule 10038 scanning CSP header
+  expected_result: CSP header deployed across web application routes
+- id: SEC-255
+  category: zap
+  name: 'ZAP Passive Scan: Strict-Transport-Security Missing'
+  priority: high
+  description: ZAP passive rule 10035 scanning HSTS header
+  expected_result: HSTS header present with valid duration on HTTPS
+- id: SEC-256
+  category: zap
+  name: 'ZAP Passive Scan: Server Information Leak via Server Header'
+  priority: low
+  description: ZAP passive rule 10036 scanning Server banner
+  expected_result: Server banner minimized or suppressed
+- id: SEC-257
+  category: zap
+  name: 'ZAP Passive Scan: Timestamp Disclosure in Responses'
+  priority: low
+  description: ZAP passive rule 10096 scanning UNIX timestamps
+  expected_result: Timestamps do not expose server system clock offsets
+- id: SEC-258
+  category: zap
+  name: 'ZAP Passive Scan: Weak Hash Algorithm in Signature'
+  priority: high
+  description: ZAP rule inspecting TLS certificate signatures
+  expected_result: SHA-256 or stronger signature algorithm used
+- id: SEC-259
+  category: zap
+  name: 'ZAP Passive Scan: Anti-CSRF Tokens on Forms'
+  priority: high
+  description: ZAP passive rule 10202 scanning POST forms
+  expected_result: State-changing actions protected by Bearer auth / CSRF tokens
+- id: SEC-260
+  category: zap
+  name: 'ZAP Passive Scan: Information Disclosure - Debug Errors'
+  priority: high
+  description: ZAP passive rule 10023 scanning HTTP 500 pages
+  expected_result: Zero stack traces or debug pages exposed in production
+- id: SEC-261
+  category: zap
+  name: 'ZAP Spider: Application Endpoint Discovery'
+  priority: medium
+  description: Run ZAP spider crawler on DiseaseGene routes
+  expected_result: 'Discovers all public routes: /genes, /diseases, /variants, /search'
+- id: SEC-262
+  category: zap
+  name: 'ZAP Spider: API OpenAPI Spec Ingestion'
+  priority: high
+  description: Import /api/v1/openapi.json into ZAP API catalog
+  expected_result: All REST API endpoints successfully cataloged for inspection
+- id: SEC-263
+  category: zap
+  name: ZAP Baseline Scan on Root Endpoint /
+  priority: critical
+  description: Execute ZAP baseline scan on root path
+  expected_result: Zero high or medium severity baseline alert findings
+- id: SEC-264
+  category: zap
+  name: ZAP Baseline Scan on /health Endpoint
+  priority: medium
+  description: Execute ZAP baseline scan on health route
+  expected_result: Zero security alerts on health endpoint
+- id: SEC-265
+  category: zap
+  name: ZAP Baseline Scan on /api/v1/stats Endpoint
+  priority: high
+  description: Execute ZAP baseline scan on stats route
+  expected_result: Zero security alerts; data delivered securely
+- id: SEC-266
+  category: zap
+  name: ZAP Baseline Scan on /genes Endpoint
+  priority: high
+  description: Execute ZAP baseline scan on genes catalog
+  expected_result: Zero security alerts; pagination parameters secure
+- id: SEC-267
+  category: zap
+  name: ZAP Baseline Scan on /diseases Endpoint
+  priority: high
+  description: Execute ZAP baseline scan on diseases catalog
+  expected_result: Zero security alerts on disease endpoints
+- id: SEC-268
+  category: zap
+  name: ZAP Baseline Scan on /variants Endpoint
+  priority: high
+  description: Execute ZAP baseline scan on variants catalog
+  expected_result: Zero security alerts on variants endpoints
+- id: SEC-269
+  category: zap
+  name: ZAP Baseline Scan on /pathways Endpoint
+  priority: medium
+  description: Execute ZAP baseline scan on pathways catalog
+  expected_result: Zero security alerts on pathways endpoints
+- id: SEC-270
+  category: zap
+  name: ZAP Baseline Scan on /associations Endpoint
+  priority: high
+  description: Execute ZAP baseline scan on associations catalog
+  expected_result: Zero security alerts on association endpoints
+- id: SEC-271
+  category: zap
+  name: ZAP Baseline Scan on /drugs Endpoint
+  priority: medium
+  description: Execute ZAP baseline scan on drugs catalog
+  expected_result: Zero security alerts on drugs endpoints
+- id: SEC-272
+  category: zap
+  name: ZAP Baseline Scan on /publications Endpoint
+  priority: medium
+  description: Execute ZAP baseline scan on publications catalog
+  expected_result: Zero security alerts on publication endpoints
+- id: SEC-273
+  category: zap
+  name: ZAP Baseline Scan on /search Endpoint
+  priority: critical
+  description: Execute ZAP baseline scan on search route
+  expected_result: Zero security alerts; query input properly handled
+- id: SEC-274
+  category: zap
+  name: ZAP Baseline Scan on /auth/login Endpoint
+  priority: critical
+  description: Execute ZAP baseline scan on authentication endpoint
+  expected_result: Zero security alerts; credentials protected in transit
+- id: SEC-275
+  category: zap
+  name: ZAP Baseline Scan on /auth/register Endpoint
+  priority: critical
+  description: Execute ZAP baseline scan on registration endpoint
+  expected_result: Zero security alerts; inputs validated
+- id: SEC-276
+  category: zap
+  name: ZAP Baseline Scan on /auth/forgot-password
+  priority: high
+  description: Execute ZAP baseline scan on forgot-password route
+  expected_result: Zero security alerts; rate limiting and generic responses verified
+- id: SEC-277
+  category: zap
+  name: ZAP Baseline Scan on /admin/overview Endpoint
+  priority: critical
+  description: Execute ZAP baseline scan on admin route with auth
+  expected_result: Zero security alerts; authorization barriers verified
+- id: SEC-278
+  category: zap
+  name: 'ZAP Passive Rule: Open Redirect Detection'
+  priority: high
+  description: ZAP passive rule scanning redirect query params
+  expected_result: Zero open redirect vulnerabilities detected
+- id: SEC-279
+  category: zap
+  name: 'ZAP Passive Rule: Insecure Content Inclusion over HTTP'
+  priority: high
+  description: ZAP rule scanning for mixed content resources
+  expected_result: Zero insecure HTTP resources loaded on HTTPS pages
+- id: SEC-280
+  category: zap
+  name: 'ZAP Passive Rule: Hash Disclosure in Web Content'
+  priority: medium
+  description: ZAP rule scanning for leaked MD5/SHA hashes
+  expected_result: Zero internal password or secret hashes exposed
+- id: SEC-281
+  category: zap
+  name: 'ZAP Passive Rule: Heartbleed Vulnerability Check'
+  priority: critical
+  description: Verify OpenSSL version resistant to Heartbleed
+  expected_result: Target server TLS stack secure against CVE-2014-0160
+- id: SEC-282
+  category: zap
+  name: 'ZAP Passive Rule: POODLE Vulnerability Check'
+  priority: critical
+  description: Verify SSL 3.0 disabled to prevent POODLE attack
+  expected_result: Target server TLS stack secure against CVE-2014-3566
+- id: SEC-283
+  category: zap
+  name: 'ZAP Passive Rule: Log4j / JNDI Injection Check'
+  priority: critical
+  description: Verify no vulnerable Java logging components
+  expected_result: Python/Node stack immune to CVE-2021-44228
+- id: SEC-284
+  category: zap
+  name: 'ZAP Passive Rule: Modern JS Framework Security'
+  priority: medium
+  description: Audit Next.js / React client bundles
+  expected_result: Client scripts free from known framework vulnerabilities
+- id: SEC-285
+  category: zap
+  name: ZAP Report HTML Generation Verification
+  priority: high
+  description: Verify ZAP generates zap-report.html artifact
+  expected_result: HTML report successfully compiled with executive summary
+- id: SEC-286
+  category: zap
+  name: ZAP Report JSON Generation Verification
+  priority: high
+  description: Verify ZAP generates zap-report.json machine-readable artifact
+  expected_result: JSON report compiled with alert counts and URLs
+- id: SEC-287
+  category: zap
+  name: ZAP Report SARIF Format Compatibility
+  priority: medium
+  description: Verify ZAP report conversion to SARIF format
+  expected_result: Valid SARIF output generated for GitHub Code Scanning tab
+- id: SEC-288
+  category: zap
+  name: ZAP Scan Pass / Fail Policy Enforcement
+  priority: critical
+  description: Enforce CI failure if High or Medium alerts found
+  expected_result: Zero High and Medium alerts allowed in CI build pipeline
+- id: SEC-289
+  category: zap
+  name: ZAP Scan Execution Duration Benchmark (< 3m)
+  priority: medium
+  description: Measure ZAP baseline scan execution duration
+  expected_result: Scan completes within 3 minutes on standard CI runner
+- id: SEC-290
+  category: zap
+  name: ZAP Alert False Positive Suppression Configuration
+  priority: low
+  description: Inspect zap-rules.conf suppression configuration
+  expected_result: False positive rules tuned appropriately without hiding real flaws
+- id: SEC-291
+  category: zap
+  name: ZAP Passive Scan on Web Application Assets
+  priority: low
+  description: Scan CSS and image assets served by frontend
+  expected_result: Static assets served with appropriate security headers
+- id: SEC-292
+  category: zap
+  name: ZAP Automated Spider Depth Restriction
+  priority: medium
+  description: Verify spider depth bounded to prevent infinite crawling
+  expected_result: Spider depth configured to 3 levels
+- id: SEC-293
+  category: zap
+  name: ZAP API Request Rate Throttling
+  priority: low
+  description: Verify request rate limited to avoid target overload
+  expected_result: Scanner runs at safe 20 requests per second
+- id: SEC-294
+  category: zap
+  name: ZAP Authentication Context Configuration
+  priority: medium
+  description: Verify ZAP bearer token auth script support
+  expected_result: Authenticated scanning executes cleanly with test token
+- id: SEC-295
+  category: zap
+  name: ZAP Non-Destructive Scanning Policy Verification
+  priority: critical
+  description: Verify no destructive fuzzing or database DROP executed
+  expected_result: Scan strictly limited to safe passive and baseline rules
+- id: SEC-296
+  category: zap
+  name: ZAP Session State Preservation
+  priority: low
+  description: Verify scan session saved for audit trail
+  expected_result: ZAP session state exported to artifacts
+- id: SEC-297
+  category: zap
+  name: ZAP CI Exit Code Mapping
+  priority: high
+  description: Verify ZAP CLI returns exit code 0 when within thresholds
+  expected_result: Returns exit code 0 for clean builds, exit code 1 for violations
+- id: SEC-298
+  category: zap
+  name: ZAP Vulnerability Remediation Guide Verification
+  priority: medium
+  description: Verify generated findings include remediation instructions
+  expected_result: Each finding includes Solution, Reference, and CWE ID
+- id: SEC-299
+  category: zap
+  name: ZAP Security Scan Step Summary Generator
+  priority: high
+  description: Verify ZAP summary formatted for $GITHUB_STEP_SUMMARY
+  expected_result: Concise markdown table of alerts rendered in GitHub Actions summary
+- id: SEC-300
+  category: security
+  name: Final Comprehensive 300-Test Security Suite Sign-off
+  priority: critical
+  description: Verify all 300 security tests pass defensive requirements
+  expected_result: Application achieves 100% security baseline compliance

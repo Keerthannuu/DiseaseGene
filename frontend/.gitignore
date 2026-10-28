@@ -1,0 +1,21 @@
+venv/
+.next/
+node_modules/
+__pycache__/
+.env
+.env.local
+
+# Android build artifacts
+android/app/build/
+android/.gradle/
+android/build/
+<<<<<<< HEAD
+android/local.properties
+=======
+<<<<<<< HEAD
+android/local.properties
+*.tsbuildinfo
+=======
+android/local.properties
+>>>>>>> aea26ac9ac182b5cb8785740858bc039e7ec4962
+>>>>>>> 020ea6e (Add my latest changes)

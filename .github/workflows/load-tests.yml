@@ -1,0 +1,110 @@
+name: k6 Load Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target Environment"
+        required: false
+        default: "test"
+        type: string
+      profile:
+        description: "Load test profile"
+        required: true
+        default: "smoke"
+        type: choice
+        options:
+          - smoke
+          - load
+          - stress
+          - spike
+          - soak
+          - api
+          - authentication
+      duration:
+        description: "Custom Duration (e.g., 30s, 1m)"
+        required: false
+        default: "30s"
+        type: string
+      vus:
+        description: "Virtual Users count"
+        required: false
+        default: "10"
+        type: string
+  pull_request:
+    paths:
+      - "backend/app/**"
+      - "tests/load/**"
+
+concurrency:
+  group: load-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-specs:
+    name: Validate Test Cases Specification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Validate 300 Load Specs (LOAD-001 -> LOAD-300)
+        run: python scripts/validate_test_cases.py
+
+  k6-tests:
+    name: Run k6 Load Scenarios
+    needs: [validate-specs]
+    runs-on: ubuntu-latest
+
+    env:
+      LOAD_TEST_BASE_URL: ${{ secrets.LOAD_TEST_BASE_URL || 'http://localhost:8000' }}
+      LOAD_TEST_PROFILE: ${{ github.event.inputs.profile || 'smoke' }}
+      LOAD_TEST_DURATION: ${{ github.event.inputs.duration || '30s' }}
+      LOAD_TEST_VUS: ${{ github.event.inputs.vus || '10' }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup k6 Binary
+        uses: grafana/setup-k6-action@v1
+
+      - name: Set up Python for Reporting
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Create Reports Directory
+        run: mkdir -p tests/load/reports
+
+      - name: Execute k6 Load Profile (${{ env.LOAD_TEST_PROFILE }})
+        id: run_k6
+        continue-on-error: true
+        run: |
+          k6 run tests/load/runner.js \
+            --summary-export=tests/load/reports/results.json \
+            --quiet || true
+
+      - name: Generate Minimal Console Summary & Step Summary
+        run: |
+          python scripts/generate_ci_summary.py \
+            --suite load \
+            --k6-json "tests/load/reports/summary.json"
+
+      - name: Upload Load Test Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-load-test-report
+          path: |
+            tests/load/reports/
+          retention-days: 14
